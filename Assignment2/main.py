@@ -1,9 +1,10 @@
 import nn
 
-layerSizes = [3]
+layerSizes = [4,5,4]
 
-for x in range(len(layerSizes)):
-    layerSizes.append(3)
+
+
+print('length of array',len(layerSizes))
 input = [1]
 input[0] = 1.0
 
