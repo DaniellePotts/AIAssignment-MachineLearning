@@ -21,25 +21,25 @@ class NeuralNetwork:
     def __init__(self,lSize):
             self.layerCount = len(lSize) - 1
             self.inputSize = lSize[0]
-            self.layerSize = [None] * self.layerCount
-            self.layerOutput = [[None] * self.layerCount,[]]
-            self.layerInput = [[None] * self.layerCount,[]]
-            self.delta = [[None] * self.layerCount,[]]
-            self.biases = [[None] * self.layerCount,[]]
-            self.previousBiasDelta = [[None] * self.layerCount,[]]
+            self.layerSize = [0] * self.layerCount
+            self.layerOutput = [[0] * self.layerCount,[]]
+            self.layerInput = [[0] * self.layerCount,[]]
+            self.delta = [[0] * self.layerCount,[]]
+            self.biases = [[0] * self.layerCount,[]]
+            self.previousBiasDelta = [[0] * self.layerCount,[]]
 
-            self.weights = [[None] * self.layerCount,[],[]]
-            self.previousWeightsDelta = [[None] * self.layerCount,[],[]]
+            self.weights = [[0] * self.layerCount,[],[]]
+            self.previousWeightsDelta = [[0] * self.layerCount,[],[]]
 
             for x in range(self.layerCount):
                 self.layerSize[x] = lSize[x+1]
 
             for x in range(self.layerCount):
-                self.biases[x] = [None] * self.layerSize[x]
-                self.previousBiasDelta[x] = [None] * self.layerSize[x]
-                self.delta[x] = [None] * self.layerSize[x]
-                self.layerOutput[x] = [None] * self.layerSize[x]
-                self.layerInput[x] = [None] * self.layerSize[x]
+                self.biases[x] = [0] * self.layerSize[x]
+                self.previousBiasDelta[x] = [0] * self.layerSize[x]
+                self.delta[x] = [0] * self.layerSize[x]
+                self.layerOutput[x] = [0] * self.layerSize[x]
+                self.layerInput[x] = [0] * self.layerSize[x]
 
                 loopVal = 0
 
@@ -48,12 +48,12 @@ class NeuralNetwork:
                 else:
                     loopVal = self.layerSize[x-1]
 
-                self.weights[x] = [None] * loopVal
-                self.previousWeightsDelta[x] = [None] * loopVal
+                self.weights[x] = [0] * loopVal
+                self.previousWeightsDelta[x] = [0] * loopVal
 
                 for y in range(loopVal):
-                    self.weights[x][y] = [None] * self.layerSize[x]
-                    self.previousWeightsDelta[x][y] = [None] * self.layerSize[x]
+                    self.weights[x][y] = [0] * self.layerSize[x]
+                    self.previousWeightsDelta[x][y] = [0] * self.layerSize[x]
 
             for x in range(self.layerCount):
                 for y in range(self.layerSize[x]):
@@ -75,7 +75,7 @@ class NeuralNetwork:
                         self.previousWeightsDelta[x][y][z] = 0.0
 
     def run(self,input,output):
-        output = [None] * self.layerSize[self.layerCount-1]
+        output = [0] * self.layerSize[self.layerCount-1]
         tFunc = transferFunctions.TransferFunctions()
         for x in range(self.layerCount):
             for y in range(self.layerSize[x]):
@@ -101,7 +101,6 @@ class NeuralNetwork:
         for x in range(self.layerSize[self.layerCount - 1]):
             output[x] = self.layerOutput[self.layerCount-1][x]
 
-
         return output
 
     def trainBP(self,input,desired,trainingRate,momentum):
@@ -110,16 +109,16 @@ class NeuralNetwork:
         weightDelta = 0.0
         biasDelta = 0.0
         tFunc = transferFunctions.TransferFunctions()
-        output = [None] * self.layerSize[self.layerCount-1]
-
-        output= self.run(input,output);
+        output = [0] * self.layerSize[self.layerCount-1]
+        output = self.run(input,output);
 
         #backpropagate
-        for x in reversed(range(self.layerCount - 1)):
+        for x in range(self.layerCount - 1,0,-1):
             if x == self.layerCount - 1:
                 for y in range(self.layerSize[x]):
-                    self.delta[x][y] = output[y] - desired[x]
-                    error += np.pow(self.delta[x][y],2)
+                    d = desired[y]
+                    self.delta[x][y] = output[y] - d
+                    error += np.power(self.delta[x][y],2)
                     self.delta[x][y] = tFunc.sigmoidDerivative(self.layerInput[x][y])
 
             else:
