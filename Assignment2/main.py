@@ -1,17 +1,18 @@
 import nn
+import guassian
 
 layerSizes = [4,5,4]
 
+input = [1.0]
 
+desired = [2.5]
 
-print('length of array',len(layerSizes))
-input = [1]
-input[0] = 1.0
-
-desired = [1]
-desired[0] = 2.5
-
-output = [1]
+output = [None] * 1
 error = 0.0
-y = 0
 neuralNet = nn.NeuralNetwork(layerSizes)
+for x in range(1000):
+    error = neuralNet.trainBP(input,output,0.17,0.1)
+    output = neuralNet.run(input,output)
+
+    if x%100 == 0:
+        print('Iteration ', x, '\nInput: ', input[0], ' output: ', output[0], 'error: ', error)
