@@ -1,6 +1,5 @@
 import nn
 import loadDataSet
-import datasets
 import numpy as np
 import kmeans
 layerSizes = [2,2,1]
