@@ -10,13 +10,13 @@ class NeuralNetwork:
     layerCount = 0
     inputSize = 0
     layerSize = []
-    weights = [[],[],[]]
-    biases = [[],[]]
-    delta = [[],[]]
-    layerInput = [[],[]]
-    layerOutput = [[],[]]
-    previousBiasDelta = [[],[]]
-    previousWeightsDelta = [[],[],[]]
+    weights = np.array([[],[],[]])
+    biases = np.array([[],[]])
+    delta = np.array([[],[]])
+    layerInput = np.array([[],[]])
+    layerOutput = np.array([[],[]])
+    previousBiasDelta = np.array([[],[]])
+    previousWeightsDelta = np.array([[],[],[]])
     g = guassian.Guassian()
     def __init__(self,lSize):
             self.layerCount = len(lSize) - 1
