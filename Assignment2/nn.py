@@ -1,10 +1,7 @@
 import numpy as np;
 import guassian
-import math
-import random
-
 import transferFunctions
-
+import kmeans
 
 class NeuralNetwork:
     layerCount = 0
@@ -17,8 +14,9 @@ class NeuralNetwork:
     layerOutput = np.array([[],[]])
     previousBiasDelta = np.array([[],[]])
     previousWeightsDelta = np.array([[],[],[]])
+    tFuncs = []
     g = guassian.Guassian()
-    def __init__(self,lSize):
+    def __init__(self,lSize,transFuncs):
             self.layerCount = len(lSize) - 1
             self.inputSize = lSize[0]
             self.layerSize = [0] * self.layerCount
@@ -30,9 +28,11 @@ class NeuralNetwork:
 
             self.weights = [[0] * self.layerCount,[],[]]
             self.previousWeightsDelta = [[0] * self.layerCount,[],[]]
+            self.tFuncs = [0] * self.layerCount
 
             for x in range(self.layerCount):
                 self.layerSize[x] = lSize[x+1]
+                self.tFuncs[x] = transFuncs[x + 1]
 
             for x in range(self.layerCount):
                 self.biases[x] = [0] * self.layerSize[x]
@@ -96,7 +96,7 @@ class NeuralNetwork:
 
                 sum += self.biases[x][y]
                 self.layerInput[x][y] = sum
-                self.layerOutput[x][y] = tFunc.sigmoid(sum)
+                self.layerOutput[x][y] = tFunc.Evaulate(self.tFuncs[x],sum)
 
         for x in range(self.layerSize[self.layerCount - 1]):
             output[x] = self.layerOutput[self.layerCount-1][x]
@@ -119,7 +119,7 @@ class NeuralNetwork:
                     d = desired[y]
                     self.delta[x][y] = output[y] - d
                     error += np.power(self.delta[x][y],2)
-                    self.delta[x][y] = tFunc.sigmoidDerivative(self.layerInput[x][y])
+                    self.delta[x][y] = tFunc.EvaulateDerivative(self.tFuncs[x],self.layerInput[x][y])
 
             else:
                 for y in range(self.layerSize[x]):
@@ -127,7 +127,7 @@ class NeuralNetwork:
                     for z in range(self.layerSize[x +1]):
                         sum += self.weights[x+1][y][x]*self.delta[x][z]
 
-                sum *= tFunc.sigmoidDerivative(self.layerInput[x][y])
+                sum *= tFunc.EvaulateDerivative(self.tFuncs[x],self.layerInput[x][y])
                 self.delta[x][y]=sum
 
         for x in range(self.layerCount):

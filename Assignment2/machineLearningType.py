@@ -2,16 +2,22 @@ import nn
 import kmeans
 import loadDataSet
 import numpy as np
+import sofm
+import filter;
+import tFuncEnum
+
 class MachineLearningType:
+
+    data = []
     def __init__(self):
-        print('AI Machine Learning')
+        x=0
 
     def GetChoice(self):
-        machineLTypes = ['Neural Network with Back Propagation', 'K-Means']
+        machineLTypes = ['Neural Network with Back Propagation', 'K-Means','SOFM']
         for x in range(len(machineLTypes)):
-            print(x ,': ' ,machineLTypes[x])
+            print x,': ' ,machineLTypes[x]
 
-        print(len(machineLTypes) + 1, ': Combination')
+        print len(machineLTypes) + 1, ': Combination'
 
         choice = -1
         while int(choice) < 0 or int(choice) > (len(machineLTypes) + 1) - 1:
@@ -20,44 +26,67 @@ class MachineLearningType:
         if choice == 2:
             return 2
         else:
-            return machineLTypes[choice]
+            return int(choice)
 
     def run(self):
         choice = self.GetChoice()
-        lData = loadDataSet.LoadDataSet()
-        data = lData.chooseDataSet()
+        ld = loadDataSet.LoadDataSet()
+        data = ld.loadData()
         if choice == 0:
-            self.runNeuralNet(data)
+            self.runNeuralNet(self.filter(data))
         elif choice == 1:
-            self.runKMeans(data)
+            self.runKMeans(self.filter(data))
         elif choice == 2:
-            result = self.runNeuralNet()
-            self.runKMeans(result)
-
+          data = ld.loadData2D()
+          testFil = filter.Filter()
+          self.runSOFM(data)
 
     def runNeuralNet(self,data):
-        layerSizes = [2, 3, 2]
-        desired = [2.5, 1.9]
-        print('length ', len(desired))
-
+        layerSizes = [1, 4, 1]
+        tFuncs = [tFuncEnum.TFuncs.Nothing, tFuncEnum.TFuncs.RationalSigmoid, tFuncEnum.TFuncs.RationalSigmoid]
+        desired = [0.01]
         error = 0.0
+        neuralNet = nn.NeuralNetwork(layerSizes, tFuncs)
+        input = [1.0]
 
-        neuralNet = nn.NeuralNetwork(layerSizes)
-        data = np.array(data)
-        input = [x for x in data if str(x) != 'nan']
-        print(len(input))
-        output = [0] * len(input)
+
+        output = [0] * layerSizes[len(layerSizes) -1]
+        print 'Desired: ', desired
         for x in range(1000):
-            error = neuralNet.trainBP(input, output, 0.17, 0.1)
+            error = neuralNet.trainBP(input, output, 0.20, 0.3)
             output = neuralNet.run(input, output)
 
             if x % 100 == 0:
-                print('Iteration ', x, ' Input: ', input[0], ' output: ', output[0], 'error: ', error)
-
-        return output
+                print 'Iteration: ', x, ' Input ', input[0], ' Output ', output[0], ' error: ', error;
 
     def runKMeans(self,data):
         k = kmeans.KMeans()
-        data = np.array(data)
-        input = [x for x in data if str(x) != 'nan']
-        k.run(input)
+        k.run(data)
+    def runSOFM(selfs,data):
+        sf = sofm.SOFM(data)
+        sf.run()
+
+    def filter(self,data):
+        filterOptions = ["Add Noise","Remove Duplicates","Normalise","Remove Missing or Empty","Stop"];
+        x = True
+        fil = filter.Filter()
+        for x in range(len(filterOptions)):
+             print x + 1,": " , filterOptions[x]
+
+        choice = input('Choose a filter')
+        if choice != 6:
+            print "Chosen Filter: ",filterOptions[choice -1]
+        if int(choice) == 1:
+            data = fil.addNoise(data)
+        elif int(choice) == 2:
+            data = fil.removeDuplicates(data)
+        elif int(choice) == 3:
+            data = fil.normalise(data)
+        elif int(choice) == 4:
+            data = fil.removeMissingOrEmpty(data)
+        else:
+              print 'Filtered data: ',data
+              return data
+
+        print 'Filtered data: ', data
+        return data

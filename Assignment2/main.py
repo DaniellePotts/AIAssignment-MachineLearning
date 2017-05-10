@@ -1,8 +1,7 @@
-import machineLearningType
+import machineLearningType as mlt
 
-program = machineLearningType.MachineLearningType()
-
-program.run()
+mlt = mlt.MachineLearningType()
+mlt.run()
 
 
 

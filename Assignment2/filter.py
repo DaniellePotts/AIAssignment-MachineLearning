@@ -3,14 +3,24 @@ import numpy as np
 class Filter:
 
     def __init__(self):
-        print('filtering...')
+        x =0
 
-    def AddNoise(self,data):
+    def addNoise(self,data):
         noise = np.random.normal(0, 1, 100)
         lst = list(data)
         for x in range(len(noise)):
-            print(data[0])
             lst.append(noise[x])
+        return np.array(lst)
+
+    def addNoise2D(selfs,data):
+        noise = np.random.normal(0,1,100)
+
+        lst = list(data)
+
+        for x in range(len(lst)):
+            for y in range(len(lst[x])):
+                lst[x].insert(noise[x])
+
         return np.array(lst)
 
     def removeDuplicates(self,data):
@@ -23,13 +33,15 @@ class Filter:
         result = np.array(norm)
         return result
 
-    def removeNonNumbers(self,data):
-        return np.array(input[~np.isnan(input)])
-
     def removeMissingOrEmpty(self,data):
         lst = list(data)
+        index = list()
         for x in range(len(lst)):
             if lst[x] == 0.0:
-                lst.remove(lst[x])
+                index.append(lst[x])
+
+        for x in range(len(index)):
+            print index[x]
+            lst.remove(index[x])
 
         return np.array(lst)
