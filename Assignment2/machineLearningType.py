@@ -5,6 +5,7 @@ import numpy as np
 import sofm
 import filter;
 import tFuncEnum
+import datasets
 
 class MachineLearningType:
 
@@ -30,30 +31,32 @@ class MachineLearningType:
 
     def run(self):
         choice = self.GetChoice()
+        dataset = self.getDataSet()
         ld = loadDataSet.LoadDataSet()
-        data = ld.loadData()
+        data = ld.loadData(dataset)
         if choice == 0:
             self.runNeuralNet(self.filter(data))
         elif choice == 1:
             self.runKMeans(self.filter(data))
         elif choice == 2:
-          data = ld.loadData2D()
+          data = ld.loadData2D(dataset)
           testFil = filter.Filter()
           self.runSOFM(data)
 
     def runNeuralNet(self,data):
-        layerSizes = [1, 4, 1]
-        tFuncs = [tFuncEnum.TFuncs.Nothing, tFuncEnum.TFuncs.RationalSigmoid, tFuncEnum.TFuncs.RationalSigmoid]
+        layerSizes = [1, 10, 1]
+        tFuncs = [tFuncEnum.TFuncs.Nothing, tFuncEnum.TFuncs.RationalSigmoid, tFuncEnum.TFuncs.Sigmoid]
         desired = [0.01]
         error = 0.0
         neuralNet = nn.NeuralNetwork(layerSizes, tFuncs)
-        input = [1.0]
-
+        input = data
+        trainingRate = 0.20
+        momentum = 0.5
 
         output = [0] * layerSizes[len(layerSizes) -1]
         print 'Desired: ', desired
-        for x in range(1000):
-            error = neuralNet.trainBP(input, output, 0.20, 0.3)
+        for x in range(2000):
+            error = neuralNet.trainBP(input, output, trainingRate, momentum)
             output = neuralNet.run(input, output)
 
             if x % 100 == 0:
@@ -90,3 +93,14 @@ class MachineLearningType:
 
         print 'Filtered data: ', data
         return data
+
+    def getDataSet(self):
+        choice = 0
+        while choice > 2 or choice < 1:
+            choice = input('choose a dataset\n1: Iris\n2: Pima-Diabetes')
+
+        if choice == 1:
+            return 'iris.csv'
+        else:
+            return 'raw-pima-indians-diabetes.csv'
+

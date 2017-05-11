@@ -5,10 +5,10 @@ class LoadDataSet:
     def __init__(self,):
         x = 0
 
-    def loadData(self):
+    def loadData(self,dataset):
         lst = list()
         nums = list()
-        with open('iris.csv', 'rb') as csvfile:
+        with open(dataset, 'rb') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',')
 
             for row in spamreader:
@@ -19,10 +19,10 @@ class LoadDataSet:
                         nums.append(float(lst[x][y]))
         return np.array(nums)
 
-    def loadData2D(self):
+    def loadData2D(self,dataset):
         lst = list()
         nums = [[], []]
-        with open('raw-pima-indians-diabetes.csv', 'rb') as csvfile:
+        with open(dataset, 'rb') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',')
 
             for row in spamreader:
